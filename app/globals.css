@@ -8,8 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* We remove the Geist font variables here so they don't override your Masters font */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +21,20 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* FIXED: Removed Arial and set it to inherit the font from layout.tsx */
+  font-family: inherit; 
+}
+
+@layer base {
+  /* This ensures that buttons, inputs, and tables use the Masters Italic */
+  button, input, select, textarea, table {
+    font-family: inherit;
+    font-style: inherit;
+  }
+
+  /* This forces the numbers on the leaderboard to match the rest of the site */
+  .font-mono {
+    font-family: inherit !important;
+    font-style: inherit !important;
+  }
 }
