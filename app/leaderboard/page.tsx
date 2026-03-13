@@ -1,52 +1,77 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import Link from 'next/link';
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function Leaderboard() {
   const [entries, setEntries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEntries = async () => {
+      // We ONLY fetch the name and choices. No points/odds are even requested.
       const { data, error } = await supabase
         .from('entries')
-        .select('*')
-        .eq('has_paid', true) // Correct: Looking for the new 'has_paid' column
-        .order('total_odds', { ascending: false });
+        .select('user_name, golfer_choice')
+        .eq('has_paid', true)
+        .order('created_at', { ascending: false });
 
-      if (!error && data) setEntries(data);
+      if (!error && data) {
+        setEntries(data);
+      }
+      setLoading(false);
     };
     fetchEntries();
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border-t-8 border-[#006747] p-6">
-        <h1 className="text-2xl font-black text-[#006747] uppercase mb-6 text-center">Tournament Leaderboard</h1>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b-2 border-gray-100 text-xs uppercase text-gray-400">
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Golfers</th>
-                <th className="py-3 px-4 text-right">Total Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry, i) => (
-                <tr key={i} className="border-b border-gray-50 hover:bg-green-50 transition-colors">
-                  <td className="py-4 px-4 font-bold text-gray-800">{entry.user_name}</td>
-                  <td className="py-4 px-4 text-sm text-gray-600">
-                    {entry.golfer_choice?.join(", ")}
-                  </td>
-                  <td className="py-4 px-4 text-right font-mono font-bold text-[#006747]">
-                    {entry.total_odds} pts
-                  </td>
+    <main className="min-h-screen bg-gray-50 py-12 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-t-[12px] border-[#006747]">
+          
+          <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h1 className="text-3xl font-black text-[#006747] uppercase italic tracking-tighter">
+              Fundraiser Entries
+            </h1>
+            <Link href="/" className="text-sm font-bold text-[#006747] hover:underline uppercase">
+              ← Back to Entry
+            </Link>
+          </div>
+
+          <div className="overflow-x-auto">
+            {/* Standardizing to a 2-COLUMN table only */}
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#006747] text-[#FFCC00] uppercase text-sm tracking-widest italic">
+                  <th className="p-6 font-black w-1/3">Name</th>
+                  <th className="p-6 font-black w-2/3">Golfers Selected</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={2} className="p-10 text-center text-gray-400 font-bold">Loading...</td>
+                  </tr>
+                ) : entries.map((entry, idx) => (
+                  <tr key={idx} className="border-b border-gray-100 hover:bg-green-50/50 italic">
+                    <td className="p-6 text-xl font-bold text-gray-800">
+                      {entry.user_name}
+                    </td>
+                    <td className="p-6 text-lg text-gray-600">
+                      {Array.isArray(entry.golfer_choice) 
+                        ? entry.golfer_choice.join(', ') 
+                        : entry.golfer_choice}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </main>
