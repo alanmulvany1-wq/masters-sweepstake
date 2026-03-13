@@ -24,10 +24,10 @@ export default function Navbar() {
                 style={{ fontFamily: 'Times New Roman, serif', fontWeight: '700', fontStyle: 'italic' }}>
               Masters 2026
             </h1>
-            <p className="text-[#006747] text-sm uppercase tracking-[0.3em] font-bold mt-2" 
-   style={{ fontFamily: 'Times New Roman, serif', fontStyle: 'italic' }}>
-  Ratoath Senior National School Fundraiser
-</p>
+            <p className="text-[#006747] text-sm uppercase tracking-[0.3em] font-bold mt-2 text-center" 
+               style={{ fontFamily: 'Times New Roman, serif', fontStyle: 'italic' }}>
+              Ratoath Senior National School Fundraiser
+            </p>
           </div>
 
           {/* 3. RIGHT: Menu Options */}
@@ -35,11 +35,15 @@ export default function Navbar() {
             <Link href="/" className="text-[#006747] font-extrabold text-xs uppercase tracking-widest hover:text-[#FFCC00] transition-colors font-serif italic">
               Home
             </Link>
+
+            {/* Renamed "Entries" to be clearer - This links to your CLEAN table (no points) */}
             <Link href="/leaderboard" className="text-[#006747] font-extrabold text-xs uppercase tracking-widest hover:text-[#FFCC00] transition-colors font-serif italic">
               Entries
             </Link>
+
+            {/* Renamed "Leaderboard" to "Live Scores" - This links to the ESPN iframe */}
             <Link href="/masters-leaderboard" className="text-[#006747] font-extrabold text-xs uppercase tracking-widest hover:text-[#FFCC00] transition-colors font-serif italic">
-              Leaderboard ⛳️
+              Live Scores ⛳️
             </Link>
           </div>
 
