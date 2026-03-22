@@ -99,6 +99,21 @@ export default function AdminPortal() {
               </tr>
             ))}
           </tbody>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+  <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+    <p className="text-xs uppercase text-blue-600 font-bold">Total Entries</p>
+    <p className="text-2xl font-black text-blue-900">{entries.length}</p>
+  </div>
+  <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+    <p className="text-xs uppercase text-green-600 font-bold">Paid Entries</p>
+    <p className="text-2xl font-black text-green-900">{entries.filter(e => e.has_paid).length}</p>
+  </div>
+  <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100">
+    <p className="text-xs uppercase text-yellow-600 font-bold">Total Raised</p>
+    <p className="text-2xl font-black text-yellow-900">€{entries.filter(e => e.has_paid).length * 10}</p> 
+    {/* Change 10 to whatever your entry fee is */}
+  </div>
+</div>
         </table>
       </div>
     </main>
