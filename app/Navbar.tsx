@@ -18,19 +18,21 @@ export default function Navbar() {
       minute: '2-digit',
     });
     setLastUpdated(formatted);
-  }, [pathname]); // Updates timestamp slightly when navigating between pages
+  }, [pathname]);
 
+  // Added "Terms" to the navigation links
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Our Leaderboard', href: '/leaderboard' },
     { name: 'Masters Scores ⛳', href: '/masters-leaderboard' },
+    { name: 'Terms', href: '/terms' },
   ];
 
   return (
     <>
       <nav className="bg-white border-b-4 border-[#FFCC00] sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-start items-center h-20 gap-12"> {/* Changed justify-between to justify-start and added gap-12 to shift links left */}
             
             {/* Logo / School Name */}
             <div className="flex-shrink-0 flex items-center">
@@ -42,7 +44,7 @@ export default function Navbar() {
                </Link>
             </div>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation - Shifted slightly left */}
             <div className="flex space-x-2 md:space-x-8">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -65,7 +67,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* GLOBAL FOOTER BAR - Shows at the bottom of every page */}
+      {/* GLOBAL FOOTER BAR */}
       <footer className="fixed bottom-0 w-full bg-gray-900/90 backdrop-blur-sm text-white py-2 z-40 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400">
