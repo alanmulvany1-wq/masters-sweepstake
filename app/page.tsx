@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { GOLFER_DATA } from './data/golfers'; 
 
@@ -14,6 +15,7 @@ export default function EntryPage() {
   const [selectedGolfers, setSelectedGolfers] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showStripe, setShowStripe] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const totalPoints = selectedGolfers.reduce((sum, g) => sum + (g.points || 0), 0);
   const pointsRemaining = Math.max(0, 150 - totalPoints);
@@ -29,7 +31,6 @@ export default function EntryPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Final UI Validation
     if (selectedGolfers.length !== 3) {
       alert("Please select exactly 3 golfers.");
       return;
@@ -40,10 +41,14 @@ export default function EntryPage() {
       return;
     }
 
+    if (!agreedToTerms) {
+      alert("Please agree to the Terms and Conditions.");
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      // NOTE: Ensure these column names ('user_name', etc.) match your Supabase Table exactly
       const { error } = await supabase.from('entries').insert([{
         user_name: name,
         email: email,
@@ -60,7 +65,7 @@ export default function EntryPage() {
       }
     } catch (err: any) {
       console.error("Submission Crash:", err);
-      alert("System Error: Please check your internet connection or Supabase keys.");
+      alert("System Error: Please check your connection.");
     } finally {
       setIsSubmitting(false);
     }
@@ -75,7 +80,7 @@ export default function EntryPage() {
 
       <div className="max-w-7xl mx-auto px-4 -mt-16 relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8">
         
-        {/* LEFT BOX: HOW TO ENTER - AUGUSTA THEME */}
+        {/* LEFT BOX: HOW TO ENTER */}
         <div className="md:col-span-4 bg-[#006747] text-white p-8 rounded-3xl shadow-xl border-b-8 border-[#FFCC00] h-fit">
           <h2 className="text-2xl font-black italic uppercase mb-6 border-b border-green-700/50 pb-2 text-[#FFCC00]">
             How to Enter
@@ -91,7 +96,7 @@ export default function EntryPage() {
             </li>
             <li className="flex gap-4">
               <span className="text-[#FFCC00]">3.</span> 
-              <span>Click submit to save your entry and proceed to payment.</span>
+              <span>Agree to Terms and click submit to proceed to payment.</span>
             </li>
           </ol>
         </div>
@@ -168,11 +173,25 @@ export default function EntryPage() {
                 ></div>
               </div>
 
+              {/* TERMS CHECKBOX */}
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <input 
+                  type="checkbox" 
+                  id="terms"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-1 h-5 w-5 rounded border-gray-300 text-[#006747] focus:ring-[#006747] cursor-pointer"
+                />
+                <label htmlFor="terms" className="text-sm font-bold text-[#006747] not-italic cursor-pointer select-none">
+                  I agree to the <Link href="/terms" target="_blank" className="underline hover:text-[#FFCC00]">Terms & Conditions</Link>
+                </label>
+              </div>
+
               <button 
                 type="submit" 
-                disabled={totalPoints < 150 || isSubmitting || selectedGolfers.length !== 3}
+                disabled={totalPoints < 150 || isSubmitting || selectedGolfers.length !== 3 || !agreedToTerms}
                 className={`w-full p-6 rounded-2xl font-black uppercase italic tracking-widest text-xl transition-all shadow-xl ${
-                  (totalPoints >= 150 && selectedGolfers.length === 3)
+                  (totalPoints >= 150 && selectedGolfers.length === 3 && agreedToTerms)
                     ? 'bg-[#006747] text-[#FFCC00] hover:bg-[#004d35] cursor-pointer' 
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 }`}
@@ -182,10 +201,10 @@ export default function EntryPage() {
             </form>
           ) : (
             <div className="text-center py-12">
-              <h2 className="text-4xl font-black text-[#006747] mb-4 italic uppercase">Entry Saved!</h2>
+              <h2 className="text-4xl font-black text-[#006747] mb-4 italic uppercase text-balance leading-tight">Entry Saved!</h2>
               <p className="mb-10 font-bold text-gray-500 italic">Success! Now complete your €10 payment to secure your spot.</p>
               <a 
-                href="https://buy.stripe.com/your_link" 
+                href="https://buy.stripe.com/14A5kD0fD941fEs37f2go00" 
                 className="inline-block bg-[#635bff] text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-lg shadow-xl hover:bg-[#534bc3] transition-all"
               >
                 Pay via Stripe
