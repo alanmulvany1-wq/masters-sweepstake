@@ -20,7 +20,6 @@ export default function Navbar() {
     setLastUpdated(formatted);
   }, [pathname]);
 
-  // Added "Terms" to the navigation links
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Our Leaderboard', href: '/leaderboard' },
@@ -32,9 +31,10 @@ export default function Navbar() {
     <>
       <nav className="bg-white border-b-4 border-[#FFCC00] sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-start items-center h-20 gap-12"> {/* Changed justify-between to justify-start and added gap-12 to shift links left */}
+          {/* Changed 'justify-start gap-12' back to 'justify-between' */}
+          <div className="flex justify-between items-center h-20"> 
             
-            {/* Logo / School Name */}
+            {/* Logo / School Name (Left Side) */}
             <div className="flex-shrink-0 flex items-center">
                <Link href="/" className="flex items-center gap-3 group">
                   <img src="/school-crest.png" alt="Logo" className="h-12 w-auto" />
@@ -44,7 +44,7 @@ export default function Navbar() {
                </Link>
             </div>
 
-            {/* Desktop Navigation - Shifted slightly left */}
+            {/* Desktop Navigation (Right Side) */}
             <div className="flex space-x-2 md:space-x-8">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
