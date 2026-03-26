@@ -62,31 +62,37 @@ export default function EntryPage() {
         {/* LEFT COLUMN: INFO BOXES */}
         <div className="md:col-span-4 space-y-6 flex flex-col">
           
-          {/* BOX 1: HOW TO ENTER */}
-          <div className="bg-[#006747] text-white p-8 rounded-3xl shadow-xl border-b-8 border-[#FFCC00]">
-            <h2 className="text-2xl font-black italic uppercase mb-6 border-b border-green-700/50 pb-2 text-[#FFCC00]">
-              How to Enter
-            </h2>
-            <ol className="space-y-6 font-bold italic text-sm">
-              <li className="flex gap-4">
-                <span className="text-[#FFCC00]">1.</span> 
-                <span>Enter your full name and a valid email address.</span>
-              </li>
-              <li className="flex gap-4">
-                <span className="text-[#FFCC00]">2.</span> 
-                <span>Select three golfers. Combined points must be at least 150.</span>
-              </li>
-              <li className="flex gap-4">
-                <span className="text-[#FFCC00]">3.</span> 
-                <span>Pay €10 via Stripe to secure your spot.</span>
-              </li>
-            </ol>
-          </div>
+         {/* BOX 1: HOW TO ENTER */}
+<div className="bg-[#006747] text-white p-8 rounded-3xl shadow-xl border-b-8 border-[#FFCC00]">
+  <h2 className="text-2xl font-black italic uppercase mb-6 border-b border-green-700/50 pb-2 text-[#FFCC00]">
+    How to Enter
+  </h2>
+  <ol className="space-y-6 font-bold italic text-sm">
+    <li className="flex gap-4">
+      <span className="text-[#FFCC00]">1.</span> 
+      <span>Enter your full name and a valid email address.</span>
+    </li>
+    <li className="flex gap-4">
+      <span className="text-[#FFCC00]">2.</span> 
+      <span>Select three golfers. Combined points must be at least 150.</span>
+    </li>
+    <li className="flex gap-4">
+      <span className="text-[#FFCC00]">3.</span> 
+      <span>Pay €10 via Stripe to secure your spot.</span>
+    </li>
+    <li className="flex gap-4 pt-2 border-t border-green-700/50">
+      <span className="text-[#FFCC00]">4.</span> 
+      <span className="text-[#FFCC00] uppercase tracking-wider">
+        Entries Close: Wed, April 8th @ 10:00 PM
+      </span>
+    </li>
+  </ol>
+</div>
 
-          {/* BOX 2: AUGUSTA STYLE "THE PURSE" */}
+          {/* BOX 2: AUGUSTA STYLE "THE PRIZES" */}
           <div className="bg-white p-10 rounded-3xl shadow-xl border-4 border-[#006747] text-center">
             <h2 className="text-3xl font-black text-[#006747] uppercase italic tracking-widest mb-2">
-              The Purse
+              The Prizes
             </h2>
             
             {/* Elegant Triple-Line Divider */}
