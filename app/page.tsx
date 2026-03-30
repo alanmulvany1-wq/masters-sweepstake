@@ -28,27 +28,49 @@ export default function EntryPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedGolfers.length !== 3 || totalPoints < 150 || !agreedToTerms) return;
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (selectedGolfers.length !== 3 || totalPoints < 150 || !agreedToTerms) return;
 
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase.from('entries').insert([{
+  setIsSubmitting(true);
+  try {
+    // 1. Insert and FETCH the newly created ID
+    const { data, error } = await supabase
+      .from('entries')
+      .insert([{
         user_name: name,
         email: email,
         golfer_choice: selectedGolfers.map(g => g.name),
         total_odds: Math.floor(totalPoints), 
         has_paid: false
-      }]);
-      if (error) throw error;
-      setShowStripe(true);
-    } catch (err: any) {
-      alert("System Error: Please check your connection.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+      }])
+      .select() // This is the magic line that gives us the ID back
+      .single();
+
+    if (error) throw error;
+
+    // 2. Instead of just showing a button, call your Stripe API with the ID
+    const response = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        entryId: data.id, // Sending the Supabase ID to Stripe
+        email: email 
+      }),
+    });
+
+    const session = await response.json();
+    
+    // 3. Redirect the user directly to their custom Stripe page
+    window.location.href = session.url;
+
+  } catch (err: any) {
+    console.error(err);
+    alert("System Error: Please check your connection.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-white pb-20 font-serif italic">
