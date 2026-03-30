@@ -1,6 +1,6 @@
 export interface Golfer {
   name: string;
-  points: number; // Changed from odds to points
+  points: number;
 }
 
 export const GOLFER_DATA: Golfer[] = [
@@ -34,6 +34,7 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Ben Griffin", points: 60 },
   { name: "Jason Day", points: 60 },
   { name: "Akshay Bhatia", points: 60 },
+  { name: "Byeong Hun An", points: 60 }, // Added
   { name: "Jacob Bridgeman", points: 66 },
   { name: "Si Woo Kim", points: 66 },
   { name: "Will Zalatoris", points: 66 },
@@ -43,6 +44,8 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Max Homa", points: 80 },
   { name: "Sungjae Im", points: 80 },
   { name: "Maverick McNealy", points: 80 },
+  { name: "Matthieu Pavon", points: 80 }, // Added
+  { name: "Chris Kirk", points: 80 }, // Added
   { name: "Wyndham Clark", points: 90 },
   { name: "Sam Burns", points: 90 },
   { name: "Adam Scott", points: 90 },
@@ -52,6 +55,7 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Marco Penge", points: 100 },
   { name: "Tony Finau", points: 100 },
   { name: "Daniel Berger", points: 100 },
+  { name: "Lucas Glover", points: 100 }, // Added
   { name: "Sergio Garcia", points: 110 },
   { name: "Tom Kim", points: 110 },
   { name: "Michael Brennan (a)", points: 125 },
@@ -63,6 +67,7 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Nicolai Hojgaard", points: 125 },
   { name: "Harry Hall", points: 125 },
   { name: "Keegan Bradley", points: 125 },
+  { name: "Gary Woodland", points: 125 }, // Added
   { name: "Kurt Kitayama", points: 140 },
   { name: "Dustin Johnson", points: 140 },
   { name: "Aaron Rai", points: 140 },
@@ -71,6 +76,7 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Carlos Ortiz", points: 150 },
   { name: "Kristoffer Reitan", points: 150 },
   { name: "Michael Kim", points: 150 },
+  { name: "Danny Willett", points: 150 }, // Added
   { name: "Sami Valimaki", points: 175 },
   { name: "Sam Stevens", points: 175 },
   { name: "Max Greyserman", points: 175 },
@@ -78,6 +84,10 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Phil Mickelson", points: 175 },
   { name: "Aldrich Potgieter", points: 200 },
   { name: "Tiger Woods", points: 200 },
+  { name: "Zach Johnson", points: 200 }, // Added
   { name: "Charl Schwartzel", points: 250 },
   { name: "Bubba Watson", points: 250 },
+  { name: "Fred Couples", points: 250 }, // Added
+  { name: "Mike Weir", points: 250 }, // Added
+  { name: "Jose Maria Olazabal", points: 300 }, // Added
 ];

@@ -38,11 +38,11 @@ export default function TermsAndConditions() {
             <div className="flex gap-4">
               <span className="font-black text-[#006747] text-xl">5.</span>
               <div>
-                <p className="mb-4">If your selected golfers miss the cut and are not partaking in the weekend session, the following "Safety Net" scoring applies:</p>
+                <p className="mb-4">If your selected golfers miss the cut and are not partaking in the weekend session, the following scoring applies:</p>
                 <ul className="space-y-3 list-disc pl-5 italic text-sm border-l-2 border-[#FFCC00] ml-2">
-                  <li>If one of your selected golfers misses the cut, you will be awarded the score of the lowest scoring golfer for the weekend session.</li>
-                  <li>If two golfers miss the cut, you will be awarded the scores of the two lowest golfers partaking in the weekend session.</li>
-                  <li>If three of your golfers miss the cut, the scores of the three lowest golfers will be awarded.</li>
+                  <li>If one of your selected golfers misses the cut, you will be awarded the score of the highest scoring golfer for the weekend session.</li>
+                  <li>If two golfers miss the cut, you will be awarded the scores of the two highest golfers partaking in the weekend session.</li>
+                  <li>If three of your golfers miss the cut, the scores of the three highest golfers will be awarded.</li>
                 </ul>
               </div>
             </div>

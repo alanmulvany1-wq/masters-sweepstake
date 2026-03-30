@@ -8,10 +8,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-/**
- * NAME CLEANER: Standardizes names to ensure Supabase and API match.
- * Example: "Shane Lowry " -> "shane lowry"
- */
 const cleanName = (name: string) => name.toLowerCase().trim().replace(/\s+/g, ' ');
 
 export default function EntriesLeaderboard() {
@@ -22,7 +18,7 @@ export default function EntriesLeaderboard() {
   useEffect(() => {
     async function fetchLeaderboardData() {
       try {
-        // 1. Fetch Live Pro Scores from Golf API
+        // 1. Fetch Live Pro Scores
         const golfRes = await fetch('https://golf-leaderboard-data.p.rapidapi.com/leaderboard/624', {
           headers: {
             'x-rapidapi-key': process.env.NEXT_PUBLIC_GOLF_API_KEY as string,
@@ -31,26 +27,36 @@ export default function EntriesLeaderboard() {
         });
         const golfData = await golfRes.json();
         
-        const proScores: Record<string, { score: number; mc: boolean }> = {};
-        const activeScores: number[] = [];
+        const proScores: Record<string, { score: number; mc: boolean; name: string }> = {};
+        const activePlayers: { name: string; score: number }[] = [];
 
         if (golfData?.results?.leaderboard) {
           golfData.results.leaderboard.forEach((p: any) => {
-            const fullName = cleanName(`${p.first_name} ${p.last_name}`);
+            const displayName = `${p.first_name} ${p.last_name}`;
+            const internalName = cleanName(displayName);
             const score = p.total_to_par || 0;
-            const isMC = p.cut === 1; // 1 means player missed the cut
+            const isMC = p.cut === 1;
             
-            proScores[fullName] = { score, mc: isMC };
+            proScores[internalName] = { score, mc: isMC, name: displayName };
             
-            // Collect scores of players still in the tournament for the Safety Net
-            if (!isMC) activeScores.push(score);
+            if (!isMC) {
+              activePlayers.push({ name: displayName, score });
+            }
           });
         }
 
-        // SAFETY NET: Penalty = the worst score currently active on the course
-        const safetyNetPenalty = activeScores.length > 0 ? Math.max(...activeScores) : 10;
+        // SAFETY NET LOGIC: Find the worst active score and the player attached to it
+        let safetyNetScore = 10;
+        let safetyNetProName = "Field Average";
 
-        // 2. Fetch PAID entries from Supabase
+        if (activePlayers.length > 0) {
+          // Sort to find the highest score (worst)
+          const worstActive = activePlayers.reduce((prev, current) => (prev.score > current.score) ? prev : current);
+          safetyNetScore = worstActive.score;
+          safetyNetProName = worstActive.name;
+        }
+
+        // 2. Fetch PAID entries
         const { data: userEntries, error } = await supabase
           .from('entries')
           .select('*')
@@ -59,27 +65,30 @@ export default function EntriesLeaderboard() {
         if (error) throw error;
 
         if (userEntries) {
-          // 3. SCORING ALGORITHM: Sum live scores + apply MC penalties
+          // 3. SCORING & REPLACEMENT NAME LOGIC
           const calculatedEntries = userEntries.map(entry => {
             let missedCutCount = 0;
-            const liveTotal = entry.golfer_choice.reduce((sum: number, name: string) => {
-              const cleanedReqName = cleanName(name);
-              const player = proScores[cleanedReqName];
-
-              if (player) {
-                if (player.mc) {
-                  missedCutCount++;
-                  return sum + safetyNetPenalty; // Apply Safety Net Penalty
-                }
-                return sum + player.score;
+            
+            // Map the golfer choices to include replacement info if they missed the cut
+            const displayPicks = entry.golfer_choice.map((name: string) => {
+              const player = proScores[cleanName(name)];
+              if (player && player.mc) {
+                missedCutCount++;
+                return { original: name, replacement: safetyNetProName, isMC: true };
               }
-              return sum + 0; // Default if player not found in API
+              return { original: name, replacement: null, isMC: false };
+            });
+
+            const liveTotal = entry.golfer_choice.reduce((sum: number, name: string) => {
+              const player = proScores[cleanName(name)];
+              // If MC or Not Found, use Safety Net
+              if (!player || player.mc) return sum + safetyNetScore;
+              return sum + player.score;
             }, 0);
 
-            return { ...entry, liveTotal, missedCutCount };
+            return { ...entry, liveTotal, missedCutCount, displayPicks };
           });
 
-          // Sort by lowest score (best)
           setEntries(calculatedEntries.sort((a, b) => a.liveTotal - b.liveTotal));
           setLastSync(new Date().toLocaleTimeString());
         }
@@ -104,12 +113,11 @@ export default function EntriesLeaderboard() {
 
   return (
     <main className="min-h-screen bg-[#FDF9F6] pb-24 font-serif italic">
-      {/* Header */}
       <div className="bg-[#006747] p-8 text-center border-b-4 border-[#FFCC00] shadow-lg">
         <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter text-white">
           Our <span className="text-[#FFCC00]">Leaderboard</span>
         </h1>
-        <p className="text-white font-bold mt-2 tracking-widest uppercase opacity-90">
+        <p className="text-white font-bold mt-2 tracking-widest uppercase opacity-90 text-xs md:text-sm">
           Ratoath Senior National School Fundraiser
         </p>
       </div>
@@ -118,31 +126,53 @@ export default function EntriesLeaderboard() {
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b-2 border-gray-100 text-[#006747] font-black italic uppercase text-sm">
-                <th className="p-6">Pos</th>
-                <th className="p-6">Entry Name</th>
-                <th className="p-6">Picks</th>
-                <th className="p-6 text-right">To Par</th>
+              <tr className="bg-gray-50 border-b-2 border-gray-100 text-[#006747] font-black italic uppercase text-xs">
+                <th className="p-4 md:p-6">Pos</th>
+                <th className="p-4 md:p-6">Entry Name</th>
+                <th className="p-4 md:p-6 hidden md:table-cell">Picks</th>
+                <th className="p-4 md:p-6 text-right">To Par</th>
               </tr>
             </thead>
             <tbody>
               {entries.map((entry, index) => (
                 <tr key={entry.id} className="border-b hover:bg-green-50/50 transition-colors group">
-                  <td className="p-6 font-bold text-gray-400">#{index + 1}</td>
-                  <td className="p-6">
-                    <span className="font-black italic text-[#006747] uppercase text-lg leading-tight block">
+                  <td className="p-4 md:p-6 font-bold text-gray-400">#{index + 1}</td>
+                  <td className="p-4 md:p-6">
+                    <span className="font-black italic text-[#006747] uppercase text-base md:text-lg leading-tight block">
                       {entry.user_name}
                     </span>
+                    {/* Mobile Only: Show picks here since they are hidden in the column */}
+                    <div className="md:hidden text-[10px] text-gray-500 mt-1">
+                       {entry.golfer_choice.join(' • ')}
+                    </div>
                     {entry.missedCutCount > 0 && (
                       <span className="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter inline-block mt-1">
-                        ⚠️ {entry.missedCutCount} Missed Cut (Penalty Applied)
+                        ⚠️ {entry.missedCutCount} Replaced (MC)
                       </span>
                     )}
                   </td>
-                  <td className="p-6 font-bold text-gray-500 text-xs md:text-sm italic">
-                    {entry.golfer_choice.join(' • ')}
+                  <td className="p-6 font-bold text-gray-500 text-xs italic hidden md:table-cell">
+                    <div className="flex flex-wrap gap-2">
+                      {entry.displayPicks.map((pick: any, i: number) => (
+                        <span key={i} className="flex items-center">
+                          {pick.isMC ? (
+                            <span className="text-red-400 line-through decoration-red-500 opacity-60 mr-1">
+                              {pick.original}
+                            </span>
+                          ) : (
+                            <span>{pick.original}</span>
+                          )}
+                          {pick.isMC && (
+                            <span className="text-[#006747] font-black not-italic text-[10px] bg-green-100 px-1 rounded">
+                              ➔ {pick.replacement}
+                            </span>
+                          )}
+                          {i < entry.displayPicks.length - 1 && <span className="ml-2 text-gray-300">•</span>}
+                        </span>
+                      ))}
+                    </div>
                   </td>
-                  <td className={`p-6 text-right font-black text-3xl ${entry.liveTotal < 0 ? 'text-red-600' : 'text-[#006747]'}`}>
+                  <td className={`p-4 md:p-6 text-right font-black text-2xl md:text-3xl ${entry.liveTotal < 0 ? 'text-red-600' : 'text-[#006747]'}`}>
                     {entry.liveTotal > 0 ? `+${entry.liveTotal}` : entry.liveTotal === 0 ? 'E' : entry.liveTotal}
                   </td>
                 </tr>
@@ -150,9 +180,14 @@ export default function EntriesLeaderboard() {
             </tbody>
           </table>
         </div>
-        <p className="mt-4 text-center text-[10px] text-gray-400 uppercase font-bold tracking-widest">
-          Last Algorithm Sync: {lastSync}
-        </p>
+        <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 px-4">
+          <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
+            Last Sync: {lastSync}
+          </p>
+          <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-[10px] uppercase font-bold text-gray-500">
+            <span className="text-red-500 mr-2">●</span> Missed Cut rule: Replaced by worst active score.
+          </div>
+        </div>
       </div>
     </main>
   );
