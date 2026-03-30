@@ -13,7 +13,10 @@ const crimson = Crimson_Text({
 export const metadata = {
   title: 'Masters Sweepstake 2026',
   description: 'Ratoath Senior National School Fundraiser',
-}
+icons: {
+    icon: "/icon.png", // This points to your school crest
+  },
+};
 
 export default function RootLayout({
   children,
