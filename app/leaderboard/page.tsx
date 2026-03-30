@@ -12,7 +12,7 @@ const cleanName = (name: string) => name.toLowerCase().trim().replace(/\s+/g, ' 
 
 export default function EntriesLeaderboard() {
   const [entries, setEntries] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Added Search State
+  const [searchTerm, setSearchTerm] = useState(""); 
   const [loading, setLoading] = useState(true);
   const [lastSync, setLastSync] = useState<string>("");
 
@@ -30,7 +30,10 @@ export default function EntriesLeaderboard() {
         const proScores: Record<string, { score: number; mc: boolean; name: string }> = {};
         const activePlayers: { name: string; score: number }[] = [];
 
-        if (golfData?.results?.leaderboard) {
+        // Check if the tournament has actually started with live scores
+        const isTournamentLive = golfData?.results?.leaderboard && golfData.results.leaderboard.length > 0;
+
+        if (isTournamentLive) {
           golfData.results.leaderboard.forEach((p: any) => {
             const displayName = `${p.first_name} ${p.last_name}`;
             const internalName = cleanName(displayName);
@@ -75,6 +78,9 @@ export default function EntriesLeaderboard() {
             });
 
             const liveTotal = entry.golfer_choice.reduce((sum: number, name: string) => {
+              // FIX: If tournament isn't live, everyone is Even (0)
+              if (!isTournamentLive) return 0;
+
               const player = proScores[cleanName(name)];
               if (!player || player.mc) return sum + safetyNetScore;
               return sum + player.score;
@@ -96,7 +102,6 @@ export default function EntriesLeaderboard() {
     fetchLeaderboardData();
   }, []);
 
-  // Filter Logic for Search Bar
   const filteredEntries = entries.filter((entry) => {
     const nameMatch = entry.user_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const selectionsMatch = entry.golfer_choice?.some((g: string) => 
