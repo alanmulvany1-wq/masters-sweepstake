@@ -96,7 +96,7 @@ export default function EntryPage() {
     </li>
     <li className="flex gap-4">
       <span className="text-[#FFCC00]">2.</span> 
-      <span>Select three golfers. Combined points must be at least 150.</span>
+      <span>Select three golfers. Combined points must be at least 150. Your final score is calculated from the aggregate score of your three golfers.</span>
     </li>
     <li className="flex gap-4">
       <span className="text-[#FFCC00]">3.</span> 
