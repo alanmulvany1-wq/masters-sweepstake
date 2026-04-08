@@ -35,6 +35,7 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Jason Day", points: 60 },
   { name: "Akshay Bhatia", points: 60 },
   { name: "Byeong Hun An", points: 60 },
+  { name: "Rickie Fowler", points: 60 }, // Added: Popular pick/Qualified
   { name: "Jacob Bridgeman", points: 66 },
   { name: "Si Woo Kim", points: 66 },
   { name: "Will Zalatoris", points: 66 },
@@ -50,6 +51,7 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Sam Burns", points: 90 },
   { name: "Adam Scott", points: 90 },
   { name: "J.J. Spaun", points: 90 },
+  { name: "Nicolas Echavarria", points: 90 }, // Added: Qualified winner
   { name: "Ryan Fox", points: 100 },
   { name: "Alex Noren", points: 100 },
   { name: "Marco Penge", points: 100 },
@@ -81,13 +83,13 @@ export const GOLFER_DATA: Golfer[] = [
   { name: "Sam Stevens", points: 175 },
   { name: "Max Greyserman", points: 175 },
   { name: "Brian Harman", points: 175 },
-  { name: "Phil Mickelson", points: 175 },
+  { name: "Ángel Cabrera", points: 175 }, // Added: Past Champ returning
   { name: "Aldrich Potgieter", points: 200 },
-  { name: "Tiger Woods", points: 200 },
   { name: "Zach Johnson", points: 200 },
   { name: "Charl Schwartzel", points: 250 },
   { name: "Bubba Watson", points: 250 },
   { name: "Fred Couples", points: 250 },
   { name: "Mike Weir", points: 250 },
+  { name: "Vijay Singh", points: 250 }, // Added: Past Champ
   { name: "Jose Maria Olazabal", points: 300 },
 ];
